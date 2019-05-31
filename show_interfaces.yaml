@@ -1,0 +1,23 @@
+---
+- name: PARSE SHOW INTERFACES
+  hosts: cisco
+  gather_facts: no
+  connection: network_cli
+
+  roles:
+    - parse_genie
+
+  tasks:
+  - name: SHOW INTERFACES
+    ios_command:
+      commands:
+        - show interfaces
+    register: interfaces
+
+  - name: SET FACT GENIE FILTER
+    set_fact: 
+      pyats_interfaces: "{{ interfaces['stdout'][0] | parse_genie(command='show interfaces', os='ios') }}"
+
+  - name: DEBUG PYATS FACTS
+    debug:
+     var: pyats_interfaces
